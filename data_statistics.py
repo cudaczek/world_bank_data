@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import os
 import pandas
 from data.WorldBankDataLoader import WorldBankDataLoader
-
+from textwrap import wrap
 
 if __name__ == "__main__":
 
@@ -23,10 +23,8 @@ if __name__ == "__main__":
                   "Age dependency ratio (% of working-age population)",
                   "Age dependency ratio, old (% of working-age population)",
                   "Age dependency ratio, young (% of working-age population)",
-                  "Urban population (% of total population)",
                   "Mortality rate, under-5 (per 1,000 live births)",
-                  "Fertility rate, total (births per woman)",
-                  "Population density (people per sq. km of land area)"]
+                  "Fertility rate, total (births per woman)"]
 
     data_per_country = set()
 
@@ -48,26 +46,19 @@ if __name__ == "__main__":
             xs.update({indicator: lista})
 
         fig, ax = plt.subplots(figsize=(30, 20))
-        ax.broken_barh(xs[INDICATORS[0]], (10, 9), facecolors='tab:blue')
-        ax.broken_barh(xs[INDICATORS[1]], (20, 9), facecolors='tab:orange')
-        ax.broken_barh(xs[INDICATORS[2]], (30, 9), facecolors='tab:green')
-        ax.broken_barh(xs[INDICATORS[3]], (40, 9), facecolors='tab:purple')
-        ax.broken_barh(xs[INDICATORS[4]], (50, 9), facecolors='tab:olive')
-        ax.broken_barh(xs[INDICATORS[5]], (60, 9), facecolors='tab:gray')
-        ax.broken_barh(xs[INDICATORS[6]], (70, 9), facecolors='tab:pink')
-        ax.broken_barh(xs[INDICATORS[7]], (80, 9), facecolors='tab:brown')
-        ax.broken_barh(xs[INDICATORS[8]], (90, 9), facecolors='tab:cyan')
-        ax.broken_barh(xs[INDICATORS[9]], (100, 9), facecolors='tab:orange')
-        ax.broken_barh(xs[INDICATORS[10]], (110, 9), facecolors='tab:green')
-        ax.broken_barh(xs[INDICATORS[11]], (120, 9), facecolors='tab:blue')
-        ax.broken_barh(xs[INDICATORS[12]], (130, 9), facecolors='tab:orange')
+        facecolors = ['tab:blue','tab:orange','tab:green','tab:purple','tab:olive', 'tab:gray', 'tab:pink', 'tab:brown','tab:cyan','tab:orange','tab:green']
+        for i, facecolor in enumerate(facecolors):
+            ax.broken_barh(xs[INDICATORS[i]], ((i+1)*10, 9), facecolors=facecolor)
         ax.set_xlabel('years')
 
         ax.set_xlim(1959, 2020)
         ax.set_yticks([15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135])
         ax.set_xticks(range(1960, 2020, 5))
-        ax.set_yticklabels(INDICATORS)
+        ax.set_yticklabels(['\n'.join(wrap(ind, 20)) for ind in INDICATORS])
         ax.grid(True)
         plt.title(country_name)
         plt.savefig(os.path.join("demography", "null_data", country_name + ".png"))
-        plt.show()
+        # plt.show()
+        plt.clf()
+        plt.close()
+        print("saved "+country_name)
