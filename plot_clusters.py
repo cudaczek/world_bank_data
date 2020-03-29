@@ -31,10 +31,9 @@ def scatter_points(assigned_cluster_numbers, point_labels, principal_components)
         plt.annotate(text, (x[i], y[i]), ha="center", size=6)
 
 
-def plot_coeffients(coeff_labels, features_count, pca):
+def plot_coeffients(coeff_labels, features_count, pca, should_add_labels=False):
     coeff = np.transpose(pca.components_[0:features_count, :])
-    # since each feature has values for each date:
-    single_feature_values_count = len(coeff_labels)
+    single_feature_values_count = len(coeff_labels) // features_count
     # arrows are scaled so that they are visible on a full graph
     coeff_scaling_factor = 40
     cmap = plt.cm.get_cmap(name='jet')
@@ -43,5 +42,6 @@ def plot_coeffients(coeff_labels, features_count, pca):
     for i in range(coeff.shape[0]):
         plt.arrow(0, 0, coeff[i, 0] * coeff_scaling_factor, coeff[i, 1] * coeff_scaling_factor,
                   color=scalar_map.to_rgba(i // single_feature_values_count), alpha=0.5)
-        plt.text(coeff[i, 0] * coeff_scaling_factor, coeff[i, 1] * coeff_scaling_factor,
-                 coeff_labels[i % len(coeff_labels)], color='b', ha='center', va='center', size=5)
+        if should_add_labels:
+           plt.text(coeff[i, 0] * coeff_scaling_factor, coeff[i, 1] * coeff_scaling_factor,
+                  coeff_labels[i % len(coeff_labels)], color='b', ha='center', va='center', size=5)

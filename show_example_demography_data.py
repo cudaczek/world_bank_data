@@ -9,7 +9,6 @@ from plot_clusters import plot_with_pca
 
 
 def get_data_for_region_per_country(region_name):
-    global europe_and_central_asia_countries
     all_countries = WorldBankDataLoader().all_countries()
     selected_countries = {country['name']: None for country in all_countries if country['region']['id'] == region_name}
     for country_name in selected_countries:
@@ -51,7 +50,7 @@ featured_countries = [country for (country, data) in data_per_country_without_nu
                       data.shape == (len(dates), len(used_indicators))]
 # scale feature; flatten arrays for K-means
 X = [preprocessing.scale(data_per_country_without_nulls[country], axis=0).flatten(order='F') for country in
-     featured_countries]
+      featured_countries]
 
 labels = clusterer.fit_predict(X)
 grouped_countries = {label: [] for label in labels}
