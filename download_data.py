@@ -17,6 +17,6 @@ if __name__ == "__main__":
             store_location = os.path.join(current_filename, country_name + ".csv")
             demography_data.to_csv(store_location)
         except TypeError:  # thrown for regions because could not call get_dataframe for region
-            print("Downlodaing data for %s faild." % country_name)
+            print("Downloading data for %s failed." % country_name)
         break
     print(datetime.datetime.now())  # 2020-03-08 16:06:20.442193
