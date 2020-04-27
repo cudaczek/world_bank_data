@@ -5,7 +5,7 @@ import pandas
 from sklearn import cluster, impute, preprocessing
 import itertools
 from data.WorldBankDataLoader import WorldBankDataLoader
-from plot_clusters import plot_with_pca
+from plot_clusters import plot_with_pca, plot_with_tsne
 
 
 def get_data_for_region_per_country(region_name):
@@ -62,12 +62,8 @@ pprint.pprint(grouped_countries)
 
 feature_names = [indicator + "(" + str(year) + ")" for (indicator, year) in itertools.product(used_indicators, dates)]
 
-# display results of clustering by bringing data into 2 dimensions via PCA
-plot_with_pca(X, labels, featured_countries, len(used_indicators), feature_names)
-
-# Areas to reconsider:
-# - how to deal with NaNs - currently mean is used, perhaps we should consider median or a different idea altogether
-# - how to deal with missing features, such as Kosovo's case here - for now the entire country gets skipped
-# - how to prepare data for clustering in general - perhaps something different than simple array flattening is desirable?
-# - how to cluster data - currently k-means is used
-# - how to visualize data - currently PCA is used
+# display results of clustering by:
+#  bringing data into 2 dimensions via PCA
+#plot_with_pca(X, labels, featured_countries, len(used_indicators), feature_names)
+# using t-SNE
+plot_with_tsne(X, labels, featured_countries)
