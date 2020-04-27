@@ -47,8 +47,8 @@ def plot_coeffients(coeff_labels, features_count, pca, should_add_labels=False):
                   coeff_labels[i % len(coeff_labels)], color='b', ha='center', va='center', size=5)
 
 
-def plot_with_tsne(data, assigned_cluster_numbers, point_labels):
-    tsne = manifold.TSNE(perplexity=7, learning_rate=100.0, n_iter=20000)
+def plot_with_tsne(data, assigned_cluster_numbers, point_labels,perplexity=7, learning_rate=100.0, iterations=20000):
+    tsne = manifold.TSNE(perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations)
     # scikit-learn recommends reducing dimensions to about 50 beforehand if there's more of them (e.g. with PCA, so let's do it
     X = data.copy()
     if X[0].shape[0] > 50 and len(X) > 50:
@@ -57,5 +57,5 @@ def plot_with_tsne(data, assigned_cluster_numbers, point_labels):
 
     results = tsne.fit_transform(X)
     scatter_points(assigned_cluster_numbers, point_labels, results)
-    plt.title("t-SNE; perplexity=7; learning rate = 100.0")
+    plt.title("t-SNE; perplexity={0}; learning rate = {1}, number of iterations = {2}".format(str(perplexity), str(learning_rate), str(iterations)))
     plt.show()

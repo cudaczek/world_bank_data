@@ -43,8 +43,7 @@ def get_region(region_name):
     return region_countries
 
 
-def verify_country(country_data, indicators, name):
-    print(name)
+def verify_country(country_data, indicators, name, maximum_allowed_missing_values=0.3):
     not_exist_counter = 0
     all_counter = 0
     for indicator in indicators:
@@ -53,7 +52,7 @@ def verify_country(country_data, indicators, name):
                 not_exist_counter += 1
             all_counter += 1
     percentage = not_exist_counter / all_counter
-    if percentage < 0:
+    if percentage <= maximum_allowed_missing_values:
         return True, percentage
     else:
         return False, percentage
@@ -73,7 +72,8 @@ def verify_region_countries_and_plot_statistics(indicators, countries, region_na
     results = dict()
     for country_name in list(countries.keys()):
         country_data = countries[country_name]
-        is_successful, percentage = verify_country(country_data, indicators, country_name)
+        is_successful, percentage = verify_country(country_data, indicators, country_name, 0)
+        print(country_name)
         results.update({country_name: percentage})
     X = results.keys()
     y = results.values()
