@@ -5,7 +5,8 @@ import pandas
 from sklearn import cluster, impute, preprocessing
 import itertools
 from data.WorldBankDataLoader import WorldBankDataLoader
-from plot_clusters import plot_with_pca
+from plot_clusters import plot_with_pca, plot_with_tsne
+from existence_checker import verify_region_countries
 
 
 def get_data_for_region_per_country(region_name):
@@ -27,21 +28,12 @@ def replace_nulls(country_data):
     return data_per_country
 
 
-europe_and_central_asia_countries = get_data_for_region_per_country('ECS')
-dates = europe_and_central_asia_countries['Poland']['date'].to_numpy()  # any country would suffice, we just need dates
-used_indicators = ['Population density (people per sq. km of land area)',
-                   'Urban population (% of total population)',
-                   "Birth rate, crude (per 1,000 people)",
-                   "Death rate, crude (per 1,000 people)",
-                   "Population, male (% of total population)",
-                   "Sex ratio at birth (male births per female births)",
-                   "Age dependency ratio (% of working-age population)",
-                   "Age dependency ratio, old (% of working-age population)",
-                   "Age dependency ratio, young (% of working-age population)",
-                   "Mortality rate, under-5 (per 1,000 live births)",
-                   "Fertility rate, total (births per woman)"]
+countries_data_to_show = get_data_for_region_per_country('MEA')
+dates = next(iter(countries_data_to_show.values()))['date'].to_numpy()  # any country would suffice, we just need dates
+used_indicators = list(WorldBankDataLoader().demographic_indicators().values())
+countries_data_to_show = verify_region_countries(used_indicators, countries_data_to_show)
 
-data_per_country_without_nulls = replace_nulls(europe_and_central_asia_countries)
+data_per_country_without_nulls = replace_nulls(countries_data_to_show)
 
 # cluster countries with k-means
 clusterer = cluster.KMeans(n_clusters=8, random_state=42)
@@ -62,12 +54,8 @@ pprint.pprint(grouped_countries)
 
 feature_names = [indicator + "(" + str(year) + ")" for (indicator, year) in itertools.product(used_indicators, dates)]
 
-# display results of clustering by bringing data into 2 dimensions via PCA
-plot_with_pca(X, labels, featured_countries, len(used_indicators), feature_names)
-
-# Areas to reconsider:
-# - how to deal with NaNs - currently mean is used, perhaps we should consider median or a different idea altogether
-# - how to deal with missing features, such as Kosovo's case here - for now the entire country gets skipped
-# - how to prepare data for clustering in general - perhaps something different than simple array flattening is desirable?
-# - how to cluster data - currently k-means is used
-# - how to visualize data - currently PCA is used
+# display results of clustering by:
+#  bringing data into 2 dimensions via PCA
+#plot_with_pca(X, labels, featured_countries, len(used_indicators), feature_names)
+# using t-SNE
+plot_with_tsne(X, labels, featured_countries)
