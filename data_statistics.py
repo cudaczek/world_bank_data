@@ -46,9 +46,10 @@ if __name__ == "__main__":
             xs.update({indicator: lista})
 
         fig, ax = plt.subplots(figsize=(30, 20))
-        facecolors = ['tab:blue','tab:orange','tab:green','tab:purple','tab:olive', 'tab:gray', 'tab:pink', 'tab:brown','tab:cyan','tab:orange','tab:green']
+        facecolors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:olive', 'tab:gray', 'tab:pink',
+                      'tab:brown', 'tab:cyan', 'tab:orange', 'tab:green']
         for i, facecolor in enumerate(facecolors):
-            ax.broken_barh(xs[INDICATORS[i]], ((i+1)*10, 9), facecolors=facecolor)
+            ax.broken_barh(xs[INDICATORS[i]], ((i + 1) * 10, 9), facecolors=facecolor)
         ax.set_xlabel('years')
 
         ax.set_xlim(1959, 2020)
@@ -61,4 +62,4 @@ if __name__ == "__main__":
         # plt.show()
         plt.clf()
         plt.close()
-        print("saved "+country_name)
+        print("Saved " + country_name)
