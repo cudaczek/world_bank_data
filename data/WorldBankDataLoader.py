@@ -44,6 +44,20 @@ class WorldBankDataLoader:
             'SH.IMM.IDPT': 'Immunization, DPT (% of children ages 12-23 months)'
         }
 
+    def economic_indicators(self):
+        return {
+            'NY.GNP.PCAP.CD': 'GNI per capita',
+            'NY.ADJ.AEDU.GN.ZS': 'Adjusted savings: education expenditure (% of GNI)',
+            'NY.GDP.MKTP.CD': 'GDP (current US$)',
+            # 'GC.DOD.TOTL.GD.ZS': 'Central government debt, total (% of GDP)',
+            'NE.EXP.GNFS.ZS': 'Exports of goods and services (% of GDP)',
+            'NE.IMP.GNFS.ZS': 'Imports of goods and services (% of GDP)',
+            'NE.CON.TOTL.ZS': 'Final consumption expenditure (% of GDP)',
+            'NE.GDI.TOTL.ZS': 'Gross capital formation (% of GDP)',
+            'GC.XPN.TOTL.GD.ZS': 'Expense (% of GDP)',
+            'NY.GDP.DEFL.KD.ZG': 'Inflation, GDP deflator (annual %)'
+        }
+
     def demography(self, country=None):
         indicators = self.demographic_indicators()
         if country is None:
@@ -52,6 +66,12 @@ class WorldBankDataLoader:
 
     def sociodemography(self, country=None):
         indicators = self.sociodemographic_indicators()
+        if country is None:
+            country = self.countries
+        return wbdata.get_dataframe(indicators, country=country, convert_date=False)
+
+    def economy(self, country=None):
+        indicators = self.economic_indicators()
         if country is None:
             country = self.countries
         return wbdata.get_dataframe(indicators, country=country, convert_date=False)
