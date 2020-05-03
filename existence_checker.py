@@ -8,30 +8,49 @@ word_bank_data_loader = WorldBankDataLoader()
 all_countries = word_bank_data_loader.all_countries()
 all_regions = word_bank_data_loader.regions
 
-DEMOGRAPHIC_INDICATORS = ['Population density (people per sq. km of land area)',
-                          'Urban population (% of total population)',
-                          "Birth rate, crude (per 1,000 people)",
-                          "Death rate, crude (per 1,000 people)",
-                          "Population, male (% of total population)",
-                          "Sex ratio at birth (male births per female births)",
-                          "Age dependency ratio (% of working-age population)",
-                          "Age dependency ratio, old (% of working-age population)",
-                          "Age dependency ratio, young (% of working-age population)",
-                          "Urban population (% of total population)",
-                          "Mortality rate, under-5 (per 1,000 live births)",
-                          "Fertility rate, total (births per woman)",
-                          "Population density (people per sq. km of land area)"]
+DEMOGRAPHIC_INDICATORS = [
+    'Population density (people per sq. km of land area)',
+    'Urban population (% of total population)',
+    "Birth rate, crude (per 1,000 people)",
+    "Death rate, crude (per 1,000 people)",
+    "Population, male (% of total population)",
+    "Sex ratio at birth (male births per female births)",
+    "Age dependency ratio (% of working-age population)",
+    "Age dependency ratio, old (% of working-age population)",
+    "Age dependency ratio, young (% of working-age population)",
+    "Urban population (% of total population)",
+    "Mortality rate, under-5 (per 1,000 live births)",
+    "Fertility rate, total (births per woman)",
+    "Population density (people per sq. km of land area)"
+]
+
+ECONOMIC_INDICATORS = [
+    'GNI per capita',
+    'Adjusted savings: education expenditure (% of GNI)',
+    'GDP (current US$)',
+    # 'Central government debt, total (% of GDP)',
+    'Exports of goods and services (% of GDP)',
+    'Imports of goods and services (% of GDP)',
+    'Final consumption expenditure (% of GDP)',
+    'Gross capital formation (% of GDP)',
+    'Expense (% of GDP)',
+    'Inflation, GDP deflator (annual %)'
+]
 
 
-def get_region(region_name):
+def get_region(region_name, group_name):
     region_countries = {country['name']: None for country in all_countries if
                         country['region']['id'] == region_name}
     print(region_name)
     to_del = []
     for country_name in region_countries:
         try:
-            country_data_path = os.path.join("demography", "downloaded_countries", country_name + ".csv")
+            country_data_path = os.path.join(group_name, "downloaded_countries", country_name + ".csv")
             region_countries[country_name] = pandas.read_csv(country_data_path)
+
+            region_countries[country_name] = region_countries[country_name][
+                region_countries[country_name]['date'] > 1980]
+
         except FileNotFoundError:  # thrown for regions because could not call get_dataframe for region
             print("Downloading data for %s failed." % country_name)
             to_del.append(country_name)
@@ -68,31 +87,46 @@ def verify_region_countries(indicators, countries):
     return ok_countries
 
 
-def verify_region_countries_and_plot_statistics(indicators, countries, region_name):
+def verify_region_countries_and_plot_statistics(indicators, countries, region_name, group_name):
     results = dict()
     for country_name in list(countries.keys()):
         country_data = countries[country_name]
         is_successful, percentage = verify_country(country_data, indicators, country_name, 0)
-        print(country_name)
         results.update({country_name: percentage})
-    X = results.keys()
-    y = results.values()
+    X = []
+    y = []
+    for key, val in results.items():
+        X.append(key)
+        y.append(val)
     plt.subplots(figsize=(20, 20))
     plt.title(region_name)
     plt.bar(X, y)
-    plt.xticks(range(len(X)), X)
-    plt.xticks(rotation=45)
+    plt.xticks(range(len(X)), X, rotation=90)
     plt.axhline(y=0.3, color='r', linestyle='-')
-    plt.savefig(os.path.join("demography", "country_verification",
+    plt.savefig(os.path.join(group_name, "country_verification",
                              datetime.datetime.now().strftime("%m-%d-%Y_%H_%M_%S") + '_verified_region_statistics.png'))
     plt.show()
 
 
-if __name__ == "__main__":
+def existence_checker_economy():
     for region_name in all_regions:
         if region_name != 'NA':
             print(region_name)
-            region_countries = get_region(region_name)
+            region_countries = get_region(region_name, "economy")
+            verify_region_countries_and_plot_statistics(indicators=ECONOMIC_INDICATORS, countries=region_countries,
+                                                        region_name=region_name, group_name="economy")
+
+
+def existence_checker_demography():
+    for region_name in all_regions:
+        if region_name != 'NA':
+            print(region_name)
+            region_countries = get_region(region_name, "demography")
 
             verify_region_countries_and_plot_statistics(indicators=DEMOGRAPHIC_INDICATORS, countries=region_countries,
-                                                        region_name=region_name)
+                                                        region_name=region_name, group_name="demography")
+
+
+if __name__ == "__main__":
+    existence_checker_demography()
+    existence_checker_economy()
