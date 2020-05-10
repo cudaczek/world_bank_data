@@ -38,18 +38,19 @@ ECONOMIC_INDICATORS = [
 ]
 
 
-def get_region(region_name, group_name):
+def get_region(region_name, group_name, start_year=None):
     region_countries = {country['name']: None for country in all_countries if
                         country['region']['id'] == region_name}
-    print(region_name)
+    # print(region_name)
     to_del = []
     for country_name in region_countries:
         try:
             country_data_path = os.path.join(group_name, "downloaded_countries", country_name + ".csv")
             region_countries[country_name] = pandas.read_csv(country_data_path)
 
-            region_countries[country_name] = region_countries[country_name][
-                region_countries[country_name]['date'] > 1980]
+            if start_year is not None:
+                region_countries[country_name] = region_countries[country_name][
+                    region_countries[country_name]['date'] > start_year]
 
         except FileNotFoundError:  # thrown for regions because could not call get_dataframe for region
             print("Downloading data for %s failed." % country_name)
@@ -112,7 +113,7 @@ def existence_checker_economy():
     for region_name in all_regions:
         if region_name != 'NA':
             print(region_name)
-            region_countries = get_region(region_name, "economy")
+            region_countries = get_region(region_name, "economy", start_year=1989)
             verify_region_countries_and_plot_statistics(indicators=ECONOMIC_INDICATORS, countries=region_countries,
                                                         region_name=region_name, group_name="economy")
 
