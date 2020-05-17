@@ -35,7 +35,7 @@ class WorldBankDataLoader:
     def sociodemographic_indicators(self):
         return {
             'SL.UEM.TOTL.ZS': 'Unemployment, total (% of total labor force) (modeled ILO estimate)',
-            'SH.STA.MALN.ZS': 'Prevalence of underweight, weight for age (% of children under 5)',
+            #'SH.STA.MALN.ZS': 'Prevalence of underweight, weight for age (% of children under 5)',
             'SE.ADT.LITR.ZS':'Literacy rate, adult total (% of people ages 15 and above)',
             'SP.POP.1564.TO.ZS':'Population ages 15-64 (% of total population)',
             'SP.POP.0014.TO.ZS':'Population ages 0-14 (% of total population)',

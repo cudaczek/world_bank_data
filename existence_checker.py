@@ -126,7 +126,16 @@ def existence_checker_demography():
             verify_region_countries_and_plot_statistics(indicators=DEMOGRAPHIC_INDICATORS, countries=region_countries,
                                                         region_name=region_name, group_name="demography")
 
+def existence_checker_sociodemography():
+    for region_name in all_regions:
+        if region_name != 'NA':
+            print(region_name)
+            region_countries = get_region(region_name, "sociodemography")
+
+            verify_region_countries_and_plot_statistics(indicators=word_bank_data_loader.sociodemographic_indicators().values(), countries=region_countries,
+                                                        region_name=region_name, group_name="sociodemography")
 
 if __name__ == "__main__":
+    existence_checker_sociodemography()
     existence_checker_demography()
     existence_checker_economy()
