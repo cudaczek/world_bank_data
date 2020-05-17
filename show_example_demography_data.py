@@ -6,7 +6,7 @@ from sklearn import cluster, impute, preprocessing
 import itertools
 from data.WorldBankDataLoader import WorldBankDataLoader
 from plot_clusters import plot_with_pca, plot_with_tsne
-from existence_checker import verify_region_countries
+from existence_checker import get_region, verify_region_countries
 
 
 def get_data_for_region_per_country(region_name):
@@ -27,19 +27,38 @@ def replace_nulls(country_data):
         data_per_country[country_name] = imputer.fit_transform(data)
     return data_per_country
 
-
-countries_data_to_show = get_data_for_region_per_country('MEA')
-dates = next(iter(countries_data_to_show.values()))['date'].to_numpy()  # any country would suffice, we just need dates
+countries_data_to_show =  get_region('LCN', 'demography') # get_data_for_region_per_country('EAS')
+#countries_data_to_show.update(get_region('NAC', 'economy', start_year=1989))
 used_indicators = list(WorldBankDataLoader().demographic_indicators().values())
 countries_data_to_show = verify_region_countries(used_indicators, countries_data_to_show)
+
+# after verification, skip all features that are missed by at least one country among those who passed the 30% verification
+features_to_skip = {}
+for country_name in countries_data_to_show.keys():
+    df1 = countries_data_to_show[country_name]
+    missing_features = df1.columns[df1.isna().all()].tolist()
+    for missing_feature in missing_features:
+        if not missing_feature in features_to_skip.keys():
+            features_to_skip[missing_feature]=[]
+        features_to_skip[missing_feature].append(country_name)
+
+print("Skipping features:", features_to_skip)
+
+for country, country_data in countries_data_to_show.items():
+    country_data.drop(list(features_to_skip.keys()), axis=1, inplace=True)
+
+used_indicators = [ind for ind in used_indicators if ind not in features_to_skip]
+
+# end of skipping missing features
+
+dates = next(iter(countries_data_to_show.values()))['date'].to_numpy()  # any country would suffice, we just need dates
 
 data_per_country_without_nulls = replace_nulls(countries_data_to_show)
 
 # cluster countries with k-means
 clusterer = cluster.KMeans(n_clusters=8, random_state=42)
 # filter out countries without all expected features
-featured_countries = [country for (country, data) in data_per_country_without_nulls.items() if
-                      data.shape == (len(dates), len(used_indicators))]
+featured_countries = [country for (country, data) in data_per_country_without_nulls.items()]
 # scale feature; flatten arrays for K-means
 X = [preprocessing.scale(data_per_country_without_nulls[country], axis=0).flatten(order='F') for country in
       featured_countries]
@@ -58,4 +77,4 @@ feature_names = [indicator + "(" + str(year) + ")" for (indicator, year) in iter
 #  bringing data into 2 dimensions via PCA
 #plot_with_pca(X, labels, featured_countries, len(used_indicators), feature_names)
 # using t-SNE
-plot_with_tsne(X, labels, featured_countries)
+plot_with_tsne(X, labels, featured_countries, perplexity=5, iterations=1000, learning_rate=15)
