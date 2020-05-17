@@ -27,8 +27,14 @@ def replace_nulls(country_data):
         data_per_country[country_name] = imputer.fit_transform(data)
     return data_per_country
 
-countries_data_to_show =  get_region('LCN', 'demography') # get_data_for_region_per_country('EAS')
-#countries_data_to_show.update(get_region('NAC', 'economy', start_year=1989))
+group_name = 'demography'
+countries_data_to_show =  get_region('ECS', group_name) # get_data_for_region_per_country('EAS')
+countries_data_to_show.update(get_region('NAC', group_name))
+countries_data_to_show.update(get_region('LCN', group_name))
+countries_data_to_show.update(get_region('SAS', group_name))
+countries_data_to_show.update(get_region('MEA', group_name))
+countries_data_to_show.update(get_region('SSF', group_name))
+#countries_data_to_show.update(get_region('EAS', group_name))
 used_indicators = list(WorldBankDataLoader().demographic_indicators().values())
 countries_data_to_show = verify_region_countries(used_indicators, countries_data_to_show)
 
@@ -56,7 +62,7 @@ dates = next(iter(countries_data_to_show.values()))['date'].to_numpy()  # any co
 data_per_country_without_nulls = replace_nulls(countries_data_to_show)
 
 # cluster countries with k-means
-clusterer = cluster.KMeans(n_clusters=8, random_state=42)
+clusterer = cluster.KMeans(n_clusters=15, random_state=42)
 # filter out countries without all expected features
 featured_countries = [country for (country, data) in data_per_country_without_nulls.items()]
 # scale feature; flatten arrays for K-means
