@@ -32,15 +32,16 @@ ECONOMIC_INDICATORS = [
     'Expense (% of GDP)',
     'Inflation, GDP deflator (annual %)'
 ]
+CHECKED_INDICATORS = list(WorldBankDataLoader().sociodemographic_indicators().values())
 
 all_countries = WorldBankDataLoader().all_countries()
 
 if __name__ == "__main__":
 
-    group_name = "economy"
+    group_name = "sociodemography"
     # get countries in region - here it's Europe & Central Asia
     europe_and_central_asia_countries = {country['name']: None for country in all_countries if
-                                         country['region']['id'] == 'ECS'}
+                                         country['region']['id'] == 'NAC'}
     for country_name in europe_and_central_asia_countries:
         country_data_path = os.path.join(group_name, "downloaded_countries", country_name + ".csv")
         europe_and_central_asia_countries[country_name] = pandas.read_csv(country_data_path)
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     for country_name in list(europe_and_central_asia_countries.keys()):
         data = europe_and_central_asia_countries[country_name]
         xs = {}
-        for indicator in ECONOMIC_INDICATORS:
+        for indicator in CHECKED_INDICATORS:
             lista = []
             last_year_found = 2019
             last_year = 2020
@@ -67,14 +68,14 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(figsize=(30, 20))
         facecolors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:olive', 'tab:gray', 'tab:pink',
                       'tab:brown', 'tab:cyan', 'tab:orange', 'tab:green']
-        for i, facecolor in enumerate(facecolors[:len(ECONOMIC_INDICATORS)]):
-            ax.broken_barh(xs[ECONOMIC_INDICATORS[i]], ((i + 1) * 10, 9), facecolors=facecolor)
+        for i, facecolor in enumerate(facecolors[:len(CHECKED_INDICATORS)]):
+            ax.broken_barh(xs[CHECKED_INDICATORS[i]], ((i + 1) * 10, 9), facecolors=facecolor)
         ax.set_xlabel('years')
 
         ax.set_xlim(1959, 2020)
         ax.set_yticks([15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135])
         ax.set_xticks(range(1960, 2020, 5))
-        ax.set_yticklabels(['\n'.join(wrap(ind, 20)) for ind in ECONOMIC_INDICATORS])
+        ax.set_yticklabels(['\n'.join(wrap(ind, 20)) for ind in CHECKED_INDICATORS])
         ax.grid(True)
         plt.title(country_name)
         plt.savefig(os.path.join(group_name, "null_data", country_name + ".png"))
