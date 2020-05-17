@@ -64,7 +64,7 @@ def get_data_per_country(indicators, region_name, group_name, start_year=None, s
 
 
 def plot_dendrogram(group_name, region, data_per_country, featured_countries, strategy="mean", color_threshold=500):
-    X = np.array([np.array(data_per_country[country]).flatten() for country in featured_countries])
+    X = np.array([np.array(data_per_country[country]).flatten('F') for country in featured_countries])
     metric = "euclidean"
     method = "ward"
     Z = linkage(X, method, metric=metric)
@@ -93,23 +93,38 @@ def evaluate_demography():
     group_name = "demography"
     for region in all_regions:
         used_indicators = DEMOGRAPHIC_INDICATORS
-        data_per_country = get_data_per_country(used_indicators, region, group_name)
-        featured_countries = [country for (country, data) in data_per_country.items() if data.shape == (60, 13)]
-        plot_dendrogram(group_name, region, data_per_country, featured_countries)
+        if region != "ECS" and region != "NAC":
+            data_per_country = get_data_per_country(used_indicators, region, group_name)
+            featured_countries = [country for (country, data) in data_per_country.items() if data.shape == (60, 13)]
+            plot_dendrogram(group_name, region, data_per_country, featured_countries)
+        if region == 'NAC':
+            data_per_country_NAC = get_data_per_country(used_indicators, 'NAC', group_name)
+            data_per_country = get_data_per_country(used_indicators, 'ECS', group_name)
+            data_per_country.update(data_per_country_NAC)
+            region = 'NAC&ECS'
+            featured_countries = [country for (country, data) in data_per_country.items() if data.shape == (60, 13)]
+            plot_dendrogram(group_name, region, data_per_country, featured_countries)
 
 
 def evaluate_economy():
     group_name = "economy"
     for region in all_regions:
-        if region != 'NA':
-            used_indicators = ECONOMIC_INDICATORS
-            data_per_country = get_data_per_country(used_indicators, region, group_name, start_year=1989)
-            for (country, data) in data_per_country.items():
-                print(country, data.shape)
-            featured_countries = [country for (country, data) in data_per_country.items() if data.shape == (30, 8)]
+        used_indicators = ECONOMIC_INDICATORS
+        data_per_country = {}
+        if region == 'NAC':
+            data_per_country_NAC = get_data_per_country(used_indicators, 'NAC', group_name, start_year=1989)
+            data_per_country = get_data_per_country(used_indicators, 'ECS', group_name, start_year=1989)
+            data_per_country.update(data_per_country_NAC)
+            featured_countries = [country for (country, data) in data_per_country.items() if data.shape == (30, 9)]
             plot_dendrogram(group_name, region, data_per_country, featured_countries, color_threshold=100000000000)
+        elif region != "ECS":
+            data_per_country = get_data_per_country(used_indicators, region, group_name, start_year=1989)
+            featured_countries = [country for (country, data) in data_per_country.items() if data.shape == (30, 9)]
+            plot_dendrogram(group_name, region, data_per_country, featured_countries, color_threshold=100000000000)
+        for (country, data) in data_per_country.items():
+            print(country, data.shape)
 
 
 if __name__ == "__main__":
-    evaluate_demography()
+    # evaluate_demography()
     evaluate_economy()

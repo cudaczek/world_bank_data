@@ -111,21 +111,26 @@ def verify_region_countries_and_plot_statistics(indicators, countries, region_na
 
 def existence_checker_economy():
     for region_name in all_regions:
-        if region_name != 'NA':
-            print(region_name)
-            region_countries = get_region(region_name, "economy", start_year=1989)
-            verify_region_countries_and_plot_statistics(indicators=ECONOMIC_INDICATORS, countries=region_countries,
-                                                        region_name=region_name, group_name="economy")
+        print(region_name)
+        region_countries = get_region(region_name, "economy", start_year=1989)
+        if region_name == 'NAC':
+            region_countries_ECS = get_region('ECS', "demography")
+            region_countries.update(region_countries_ECS)
+            region_name = 'NAC&ECS'
+        verify_region_countries_and_plot_statistics(indicators=ECONOMIC_INDICATORS, countries=region_countries,
+                                                    region_name=region_name, group_name="economy")
 
 
 def existence_checker_demography():
     for region_name in all_regions:
-        if region_name != 'NA':
-            print(region_name)
-            region_countries = get_region(region_name, "demography")
-
-            verify_region_countries_and_plot_statistics(indicators=DEMOGRAPHIC_INDICATORS, countries=region_countries,
-                                                        region_name=region_name, group_name="demography")
+        print(region_name)
+        region_countries = get_region(region_name, "demography")
+        if region_name == 'NAC':
+            region_countries_ECS = get_region('ECS', "demography")
+            region_countries.update(region_countries_ECS)
+            region_name = 'NAC&ECS'
+        verify_region_countries_and_plot_statistics(indicators=DEMOGRAPHIC_INDICATORS, countries=region_countries,
+                                                    region_name=region_name, group_name="demography")
 
 def existence_checker_sociodemography():
     for region_name in all_regions:
