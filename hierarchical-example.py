@@ -85,8 +85,10 @@ def plot_dendrogram(group_name, region, data_per_country, featured_countries, us
     X = np.array([np.array(data_per_country[country]).flatten('F') for country in featured_countries])
     metric = "euclidean"
     method = "ward"
-    Z = linkage(X, method, metric=metric)
-    fig = plt.figure(figsize=(25, 20))
+    Z = linkage(X, method, metric=metric, optimal_ordering=True)
+    fig = plt.figure(figsize=(80, 20))
+    # (80, 20) for whole world
+    # (25, 20)
     plt.title('Hierarchical Clustering Dendrogram ' + region, fontsize=20)
     plt.xlabel('sample index')
     plt.ylabel('distance')
@@ -161,7 +163,43 @@ def evaluate_sociodemography():
                 plot_dendrogram(group_name, region, data_per_country, featured_countries, used_indicators, color_threshold=160)
 
 
+def evaluate_demography_world():
+    group_name = "demography"
+    used_indicators = DEMOGRAPHIC_INDICATORS
+    data_per_country = {}
+    for region in all_regions:
+        if region != 'NA':
+            data_per_country.update(get_data_per_country(used_indicators, region, group_name))
+    featured_countries = [country for (country, data) in data_per_country.items()]
+    plot_dendrogram(group_name, "World_optimal", data_per_country, featured_countries, used_indicators)
+
+
+def evaluate_sociodemography_world():
+    group_name = "sociodemography"
+    used_indicators = SOCIODEMOGAPHIC_INDICATORS
+    data_per_country = {}
+    for region in all_regions:
+        if region != 'NA':
+            data_per_country.update(get_data_per_country(used_indicators, region, group_name, start_year=1979))
+    featured_countries = [country for (country, data) in data_per_country.items()]
+    plot_dendrogram(group_name, "World_optimal", data_per_country, featured_countries, used_indicators)
+
+
+def evaluate_economy_world():
+    group_name = "economy"
+    used_indicators = ECONOMIC_INDICATORS
+    data_per_country = {}
+    for region in all_regions:
+        if region != 'NA':
+            data_per_country.update(get_data_per_country(used_indicators, region, group_name, start_year=1989))
+    featured_countries = [country for (country, data) in data_per_country.items()]
+    plot_dendrogram(group_name, "World_optimal", data_per_country, featured_countries, used_indicators, color_threshold=100000000000)
+
+
 if __name__ == "__main__":
-    # evaluate_demography()
+    evaluate_demography_world()
+    evaluate_sociodemography_world()
+    evaluate_economy_world()
+    evaluate_demography()
     evaluate_economy()
     evaluate_sociodemography()
