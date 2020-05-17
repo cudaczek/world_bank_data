@@ -105,7 +105,7 @@ def verify_region_countries_and_plot_statistics(indicators, countries, region_na
     plt.xticks(range(len(X)), X, rotation=90)
     plt.axhline(y=0.3, color='r', linestyle='-')
     plt.savefig(os.path.join(group_name, "country_verification",
-                             datetime.datetime.now().strftime("%m-%d-%Y_%H_%M_%S") + '_verified_region_statistics.png'))
+                             region_name + datetime.datetime.now().strftime("%m-%d-%Y_%H_%M_%S") + '_verified_region_statistics.png'))
     plt.show()
 
 
@@ -114,7 +114,7 @@ def existence_checker_economy():
         print(region_name)
         region_countries = get_region(region_name, "economy", start_year=1989)
         if region_name == 'NAC':
-            region_countries_ECS = get_region('ECS', "demography")
+            region_countries_ECS = get_region('ECS', "economy")
             region_countries.update(region_countries_ECS)
             region_name = 'NAC&ECS'
         verify_region_countries_and_plot_statistics(indicators=ECONOMIC_INDICATORS, countries=region_countries,
@@ -132,16 +132,21 @@ def existence_checker_demography():
         verify_region_countries_and_plot_statistics(indicators=DEMOGRAPHIC_INDICATORS, countries=region_countries,
                                                     region_name=region_name, group_name="demography")
 
+
 def existence_checker_sociodemography():
     for region_name in all_regions:
-        if region_name != 'NA':
-            print(region_name)
-            region_countries = get_region(region_name, "sociodemography")
+        print(region_name)
+        region_countries = get_region(region_name, "sociodemography", start_year=1979)
+        if region_name == 'NAC':
+            region_countries_ECS = get_region('ECS', "sociodemography", start_year=1979)
+            region_countries.update(region_countries_ECS)
+            region_name = 'NAC&ECS'
+        verify_region_countries_and_plot_statistics(
+                indicators=word_bank_data_loader.sociodemographic_indicators().values(), countries=region_countries,
+                region_name=region_name, group_name="sociodemography")
 
-            verify_region_countries_and_plot_statistics(indicators=word_bank_data_loader.sociodemographic_indicators().values(), countries=region_countries,
-                                                        region_name=region_name, group_name="sociodemography")
 
 if __name__ == "__main__":
     existence_checker_sociodemography()
-    existence_checker_demography()
-    existence_checker_economy()
+    # existence_checker_demography()
+    # existence_checker_economy()
