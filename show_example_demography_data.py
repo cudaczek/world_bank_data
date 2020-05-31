@@ -69,7 +69,7 @@ def cluster_and_plot(group_name, countries_data_to_show, used_indicators):
         grouped_countries[labels[i]].append(featured_countries[i])
 
     # save results of clustering
-    with open(group_name+".txt", "w") as fout:
+    with open(group_name+".txt", "w", encoding="utf-8") as fout:
         fout.write(pprint.pformat(grouped_countries))
 
     feature_names = [indicator + "(" + str(year) + ")" for (indicator, year) in itertools.product(used_indicators, dates)]
@@ -92,7 +92,7 @@ cluster_and_plot(group_name, countries_data_to_show, used_indicators)
 group_name = 'demography'
 countries_data_to_show =  get_region(regions[0], group_name) 
 for region in regions[1:]:
-    countries_data_to_show.update(get_region(region, group_name) )
+    countries_data_to_show.update(get_region(region, group_name))
 used_indicators = list(WorldBankDataLoader().demographic_indicators().values())
 cluster_and_plot(group_name, countries_data_to_show, used_indicators)
 
