@@ -64,3 +64,4 @@ def plot_with_tsne(data, assigned_cluster_numbers, point_labels,perplexity=7, le
         plt.savefig(filename+'.png')
     else:
         plt.show()
+    plt.clf()
