@@ -29,6 +29,8 @@ def scatter_points(assigned_cluster_numbers, point_labels, principal_components)
     plt.scatter(x, y, c=assigned_cluster_numbers)
     for i, text in enumerate(point_labels):
         plt.annotate(text, (x[i], y[i]), ha="center", size=6)
+        if text=="Poland":
+            plt.scatter(x[i], y[i], s=100, facecolors='none', edgecolors='r')
 
 
 def plot_coeffients(coeff_labels, features_count, pca, should_add_labels=False):
@@ -47,7 +49,7 @@ def plot_coeffients(coeff_labels, features_count, pca, should_add_labels=False):
                   coeff_labels[i % len(coeff_labels)], color='b', ha='center', va='center', size=5)
 
 
-def plot_with_tsne(data, assigned_cluster_numbers, point_labels,perplexity=7, learning_rate=100.0, iterations=20000):
+def plot_with_tsne(data, assigned_cluster_numbers, point_labels,perplexity=7, learning_rate=100.0, iterations=20000, should_save=False, filename=''):
     tsne = manifold.TSNE(perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations)
     # scikit-learn recommends reducing dimensions to about 50 beforehand if there's more of them (e.g. with PCA, so let's do it
     X = data.copy()
@@ -58,4 +60,8 @@ def plot_with_tsne(data, assigned_cluster_numbers, point_labels,perplexity=7, le
     results = tsne.fit_transform(X)
     scatter_points(assigned_cluster_numbers, point_labels, results)
     plt.title("t-SNE; perplexity={0}; learning rate = {1}, number of iterations = {2}".format(str(perplexity), str(learning_rate), str(iterations)))
-    plt.show()
+    if should_save:
+        plt.savefig(filename+'.png')
+    else:
+        plt.show()
+    plt.clf()
