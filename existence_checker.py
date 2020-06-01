@@ -114,7 +114,7 @@ def existence_checker_economy():
         print(region_name)
         region_countries = get_region(region_name, "economy", start_year=1989)
         if region_name == 'NAC':
-            region_countries_ECS = get_region('ECS', "economy")
+            region_countries_ECS = get_region('ECS', "economy", start_year=1989)
             region_countries.update(region_countries_ECS)
             region_name = 'NAC&ECS'
         verify_region_countries_and_plot_statistics(indicators=ECONOMIC_INDICATORS, countries=region_countries,
@@ -147,6 +147,6 @@ def existence_checker_sociodemography():
 
 
 if __name__ == "__main__":
-    existence_checker_sociodemography()
+    # existence_checker_sociodemography()
     # existence_checker_demography()
-    # existence_checker_economy()
+    existence_checker_economy()
